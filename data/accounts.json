@@ -1,0 +1,22 @@
+{   
+ "accounts": [
+        {
+          "type": "business",
+          "name": "B2BAccount1"
+        },
+        {
+          "type": "person",
+          "name": "B2C Account"
+        }
+        ],
+    "status": [{
+        "active": 0
+    },
+    {
+        "inactive": 5
+    }
+    ],
+    "description": [{
+        "simple": "Account Entry Description"
+    }]
+}

@@ -1,0 +1,19 @@
+{
+    "navigation": {
+      "maintab": "Control Panel",
+      "sections": [
+        {
+          "name": "Sites",
+          "subsections": [
+            {
+              "name": "Sites",
+              "links": [
+                {"name": "Sites"},
+                {"name": "Site Templates"}
+                ]
+            }
+        ]
+}
+]}
+}
+    

@@ -1,0 +1,1 @@
+export const anyProductAddToCartButton = '//p[@title="{parameter}"]//..//..//button//span[text()="Add to Cart"]'

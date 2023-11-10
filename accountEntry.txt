@@ -1,0 +1,132 @@
+macro setStatus() {
+		if (!(isSet(accountEntryStatus))) {
+			var accountEntryStatus = "Active";
+		}
+
+		if (${accountEntryStatus} == "Active") {
+			var status = 0;
+		}
+		else if (${accountEntryStatus} == "Inactive") {
+			var status = 5;
+		}
+		else {
+			fail("'accountEntryStatus' is either invalid or not yet set.");
+		}
+
+		return ${status};
+	}
+
+macro setType() {
+		if (!(isSet(accountEntryType))) {
+			var accountEntryType = "Business";
+		}
+
+		var type = StringUtil.lowerCase(${accountEntryType});
+
+		return ${type};
+	}
+
+
+macro addAccountEntry(accountEntryName = null, externalReferenceCode = null) {
+		Variables.assertDefined(parameterList = "${accountEntryName},${accountEntryType}");
+
+		if (!(isSet(creatorEmailAddress))) {
+			var creatorEmailAddress = "test@liferay.com";
+		}
+
+		if (!(isSet(creatorPassword))) {
+			var creatorPassword = "test";
+		}
+
+		if (!(isSet(accountEntryDescription))) {
+			var accountEntryDescription = "Account Entry Description";
+		}
+
+		var accountEntryStatus = JSONAccountEntrySetter.setStatus(accountEntryStatus = ${accountEntryStatus});
+		var accountEntryType = JSONAccountEntrySetter.setType(accountEntryType = ${accountEntryType});
+
+		JSONAccountEntryAPI._addAccountEntry(
+			accountEntryDescription = ${accountEntryDescription},
+			accountEntryName = ${accountEntryName},
+			accountEntryStatus = ${accountEntryStatus},
+			accountEntryType = ${accountEntryType},
+			creatorEmailAddress = ${creatorEmailAddress},
+			creatorPassword = ${creatorPassword});
+
+		if (isSet(externalReferenceCode)) {
+			JSONAccountEntryAPI._setAccountExternalReferenceCode(
+				accountEntryName = ${accountEntryName},
+				externalReferenceCode = ${externalReferenceCode});
+		}
+	}
+
+
+    macro _addAccountEntry(creatorPassword = null, accountEntryDescription = null, accountEntryStatus = null, accountEntryName = null, creatorEmailAddress = null, accountEntryType = null) {
+		Variables.assertDefined(parameterList = "${accountEntryName},${accountEntryType},${accountEntryStatus}");
+
+		var companyId = JSONCompany.getCompanyId();
+		var portalURL = JSONCompany.getPortalURL();
+		var userId = JSONUserSetter.setUserId(userEmailAddress = ${creatorEmailAddress});
+
+		var curl = '''
+			${portalURL}/api/jsonws/account.accountentry/add-account-entry \
+				-u ${creatorEmailAddress}:${creatorPassword} \
+				-d userId=${userId} \
+				-d parentAccountEntryId=0 \
+				-d name=${accountEntryName} \
+				-d description=${accountEntryDescription} \
+				-d domains= \
+				-d email= \
+				-d logoBytes= \
+				-d taxIdNumber= \
+				-d type=${accountEntryType} \
+				-d status=${accountEntryStatus}
+		''';
+
+		com.liferay.poshi.runner.util.JSONCurlUtil.post(${curl});
+	}
+
+
+macro getCompanyId(authenticationMethod = null, userScreenName = null) {
+		if (!(isSet(portalInstanceName)) || (${portalInstanceName} == "liferay.com")) {
+			var portalInstanceName = JSONCompany.getPortalInstanceName();
+		}
+
+		if (!(isSet(portalURL))) {
+			var portalURL = JSONCompany.getDefaultPortalURL();
+		}
+
+		if (!(isSet(creatorEmailAddress))) {
+			if (${authenticationMethod} == "By Screen Name") {
+				if (!(isSet(userScreenName))) {
+					var creatorEmailAddress = "test";
+				}
+				else {
+					var creatorEmailAddress = ${userScreenName};
+				}
+			}
+			else {
+				var creatorEmailAddress = JSONUtil2.getSuperAdminUserEmail();
+			}
+		}
+
+		if (!(isSet(creatorPassword))) {
+			var creatorPassword = JSONUtil2.getSuperAdminUserPassword();
+		}
+
+		var curl = '''
+			${portalURL}/api/jsonws/company/get-company-by-virtual-host/virtual-host/${portalInstanceName} \
+				-u ${creatorEmailAddress}:${creatorPassword}
+		''';
+
+		var companyId = JSONCurlUtil.get(${curl}, "$['companyId']");
+
+		return ${companyId};
+	}
+
+
+{
+  "name": "ciaone",
+  "status": 0,
+  "type": "business"
+}
