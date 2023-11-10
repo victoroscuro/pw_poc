@@ -27,6 +27,6 @@ test('Simple Commerce test', async ({ page, request, loginPage, homePage, sitesP
     //go to minium catalog and click on U-Joint product to add to cart
     await page.goto('http://localhost:8080/web/' + miniumName);
     await miniumCatalogPage.selectProductFromCatalogue(productToBuy);
-
-    
+    await miniumCatalogPage.checkAccountOnAccountSelector(accountsData.accounts[0].name);
+    await miniumCatalogPage.checkProductInMiniCart(productToBuy);
 });
