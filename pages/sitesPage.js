@@ -8,7 +8,7 @@ class SitesPage {
   async createMinium(miniumName) {
     if(await this.page.getByRole('link', { name: miniumName }).count() < 1) {
      {
-        await this.page.getByLabel('Add Site').click();
+        await this.page.getByRole('link', { name: 'Add Site' }).click();
         await this.page.getByRole('button', { name: 'Select Template: Minium', exact: true }).click();
         await this.page.frameLocator('iframe[title="Add Site"]').getByLabel('Name').fill(miniumName);
         await this.page.frameLocator('iframe[title="Add Site"]').getByLabel('Name').click();
